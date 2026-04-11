@@ -1,4 +1,4 @@
-product_id,sale_date,quantity,unit_price
+sku_id,sale_date,quantity,unit_price
 E477181-000,2023-01-01,1,39.90
 E484064-000,2023-01-01,-2,19.90
 E467322-000,2023-01-01,1,14.90

@@ -6,6 +6,7 @@ python-multipart==0.0.12     # required for FastAPI file uploads (UploadFile)
 # Database
 sqlalchemy==2.0.35
 alembic==1.13.3
+psycopg[binary]==3.2.4        # PostgreSQL driver (psycopg3, supports Python 3.13)
 
 # Validation
 pydantic==2.9.2

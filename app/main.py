@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 
-from app.db import engine
-from app.models import *  # noqa: F401, F403 — ensures all models are registered
+import app.models  # noqa: F401 — registers all models on Base.metadata
 
 app = FastAPI(
     title="Retail Insights Engine",

@@ -1,4 +1,4 @@
-# /data — Sample Dataset
+# /data/raw — Sample Dataset
 
 These are the raw source files used for development and testing.
 
@@ -26,8 +26,8 @@ uvicorn app.main:app --reload
 
 # Upload products (done once)
 curl -X POST http://localhost:8000/upload/sales \
-  -F "file=@data/sales.csv"
+  -F "file=@data/raw/sales.csv"
 
 curl -X POST http://localhost:8000/upload/inventory \
-  -F "file=@data/inventory.csv"
+  -F "file=@data/raw/inventory.csv"
 ```

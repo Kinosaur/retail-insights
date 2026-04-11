@@ -1,4 +1,4 @@
-product_id,quantity_on_hand,snapshot_date
+sku_id,quantity_on_hand,snapshot_date
 E481951-000,225,2023-01-01
 E473968-000,242,2023-01-01
 E482880-000,161,2023-01-01

@@ -16,13 +16,27 @@ Small clothing shops typically manage inventory and sales in spreadsheets. They 
 
 ## Quickstart
 
+**Prerequisites:** PostgreSQL must be running locally with a database named `retail_insights`.
+
 ```bash
 git clone https://github.com/Kinosaur/retail-insights.git
 cd retail-insights
+
+# Create and activate virtual environment
 python3 -m venv .venv
-source .venv/bin/activate
+source .venv/bin/activate        # Mac/Linux
+
+# Install dependencies
 pip install -r requirements.txt
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env and fill in your DATABASE_URL
+
+# Run database migrations
 alembic upgrade head
+
+# Start the server
 uvicorn app.main:app --reload
 ```
 
@@ -41,11 +55,12 @@ retail-insights/
 │   ├── services/     # Business logic
 │   ├── parsers/      # CSV / Excel file parsers
 │   ├── validators/   # Data cleaning pipeline
-│   ├── db.py         # Database session setup
+│   ├── db.py         # Database session + connection setup
 │   └── main.py       # FastAPI app entry point
 ├── alembic/          # Database migrations
+├── docs/             # Schema, API contract, blueprint
 ├── tests/            # pytest test suite
-└── data/             # Sample dataset (local only, not committed)
+└── data/raw/         # Sample dataset (do not edit)
 ```
 
 ---
@@ -57,7 +72,7 @@ retail-insights/
 | POST | `/upload/sales` | Person A | Upload a sales CSV/Excel file |
 | POST | `/upload/inventory` | Person A | Upload an inventory CSV/Excel file |
 | GET | `/products` | Person A | Paginated product list |
-| GET | `/products/{sku}` | Person A | Single product + sales history |
+| GET | `/products/{sku_id}` | Person A | Single product + sales history |
 | GET | `/upload-batches` | Person A | List of past uploads with status |
 | GET | `/analytics/overview` | Person B | Revenue totals, AOV, units sold |
 | GET | `/analytics/top-products` | Person B | Top sellers by revenue/units/margin |
@@ -68,14 +83,14 @@ retail-insights/
 | GET | `/analytics/explain` | Person B | LLM-generated plain-language summary |
 | GET | `/health` | — | Health check |
 
-Full contract: see [`api.md`](./api.md)
+Full contract: see [`docs/api.md`](./docs/api.md)
 
 ---
 
 ## Dataset
 
-Uses Uniqlo Singapore product data (801 SKUs) with generated sales and inventory history across 2023.
-Raw files are kept in `/data/`.
+Uses Uniqlo Singapore product data (801 SKUs) with sales and inventory history across 2023.
+Raw files are in `data/raw/`. See `data/raw/README.md` — do not edit directly.
 
 ---
 
@@ -87,7 +102,7 @@ Raw files are kept in `/data/`.
 | Framework | FastAPI |
 | Validation | Pydantic v2 |
 | Data processing | Pandas |
-| Database | SQLite (dev) |
+| Database | PostgreSQL |
 | ORM | SQLAlchemy 2.0 |
 | Migrations | Alembic |
 | LLM | Anthropic Claude API |
@@ -112,7 +127,6 @@ pytest
 - SMA forecast is a baseline only — not production forecasting
 - Lead time and safety stock are configurable defaults, not real supplier data
 - No authentication or multi-tenancy
-- SQLite is fine for a demo; switch to PostgreSQL for anything real
 
 ---
 

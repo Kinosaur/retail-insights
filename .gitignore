@@ -1,0 +1,36 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# Env
+.env
+.env.*
+
+# Database
+*.db
+*.sqlite3
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Editors
+.DS_Store
+.vscode/
+.idea/
+
+# Alembic
+# (keep versions/ tracked, ignore only local alembic.ini if needed)
+
+# Data files — root-level copies are ignored (use /data/ folder instead)
+/sales.csv
+/inventory.csv
+/uniqlo_sg_products.csv

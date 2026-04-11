@@ -75,7 +75,7 @@ Full contract: see [`api.md`](./api.md)
 ## Dataset
 
 Uses Uniqlo Singapore product data (801 SKUs) with generated sales and inventory history across 2023.
-Raw files are kept locally in `/data/` and not committed to this repo.
+Raw files are kept in `/data/`.
 
 ---
 

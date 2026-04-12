@@ -1,0 +1,76 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36" version="29.6.6">
+  <diagram name="Page-1" id="ImEhyFu9l9gGwgWwN1_f">
+    <mxGraphModel dx="1257" dy="781" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;fontStyle=1;fontSize=18;align=center;" value="System Architecture — Retail Insights Engine" vertex="1">
+          <mxGeometry height="40" width="860" x="170" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="client" parent="1" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontStyle=1;fontSize=13;" value="Client&#xa;(browser / curl / Postman)" vertex="1">
+          <mxGeometry height="60" width="240" x="475" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="fastapi" parent="1" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;" value="FastAPI App  (app/main.py)" vertex="1">
+          <mxGeometry height="55" width="240" x="475" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="e-client-api" edge="1" parent="1" source="client" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;endFill=1;" target="fastapi" value="HTTP Request">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="router-upload" parent="1" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" value="Upload Router&#xa;POST /upload/sales&#xa;POST /upload/inventory" vertex="1">
+          <mxGeometry height="70" width="210" x="105" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="router-products" parent="1" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" value="Products Router&#xa;GET /products&#xa;GET /upload-batches" vertex="1">
+          <mxGeometry height="70" width="210" x="365" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="router-analytics" parent="1" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" value="Analytics Router&#xa;GET /analytics/*" vertex="1">
+          <mxGeometry height="70" width="210" x="625" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="e-api-upload" edge="1" parent="1" source="fastapi" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;endFill=1;" target="router-upload" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-api-products" edge="1" parent="1" source="fastapi" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;endFill=1;" target="router-products" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-api-analytics" edge="1" parent="1" source="fastapi" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;endFill=1;" target="router-analytics" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="parser" parent="1" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" value="Parser&#xa;(app/parsers/)&#xa;CSV / Excel → DataFrame" vertex="1">
+          <mxGeometry height="70" width="210" x="105" y="500" as="geometry" />
+        </mxCell>
+        <mxCell id="validator" parent="1" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" value="Validator&#xa;(app/validators/)&#xa;11 validation rules" vertex="1">
+          <mxGeometry height="70" width="210" x="365" y="500" as="geometry" />
+        </mxCell>
+        <mxCell id="services" parent="1" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" value="Services&#xa;(app/services/)&#xa;analytics + query logic" vertex="1">
+          <mxGeometry height="70" width="210" x="625" y="500" as="geometry" />
+        </mxCell>
+        <mxCell id="e-upload-parser" edge="1" parent="1" source="router-upload" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;endFill=1;" target="parser" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-parser-validator" edge="1" parent="1" source="parser" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;endFill=1;" target="validator" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-products-services" edge="1" parent="1" source="router-products" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;endFill=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="services" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-analytics-services" edge="1" parent="1" source="router-analytics" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;endFill=1;" target="services" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="postgres" parent="1" style="rounded=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=13;" value="PostgreSQL&#xa;sku  |  upload_batches  |  sales  |  inventory_snapshots" vertex="1">
+          <mxGeometry height="60" width="500" x="355" y="660" as="geometry" />
+        </mxCell>
+        <mxCell id="e-validator-pg" edge="1" parent="1" source="validator" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;endFill=1;" target="postgres" value="INSERT">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-services-pg" edge="1" parent="1" source="services" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;endFill=1;" target="postgres" value="SELECT">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="claude" parent="1" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=2;fontSize=12;" value="Claude API&#xa;(Anthropic)&#xa;[optional — Week 3]" vertex="1">
+          <mxGeometry height="70" width="180" x="915" y="500" as="geometry" />
+        </mxCell>
+        <mxCell id="e-analytics-claude" edge="1" parent="1" source="router-analytics" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;endFill=1;dashed=1;strokeColor=#9673a6;" target="claude" value="GET /analytics/explain">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

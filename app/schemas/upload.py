@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 class UploadError(BaseModel):
     row: int
-    sku_id: str | None
+    product_id: str | None
     reason: str
 
 

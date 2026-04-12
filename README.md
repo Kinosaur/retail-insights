@@ -72,7 +72,7 @@ retail-insights/
 | POST | `/upload/sales` | Person A | Upload a sales CSV/Excel file |
 | POST | `/upload/inventory` | Person A | Upload an inventory CSV/Excel file |
 | GET | `/products` | Person A | Paginated product list |
-| GET | `/products/{sku_id}` | Person A | Single product + sales history |
+| GET | `/products/{product_id}` | Person A | Single product + sales history |
 | GET | `/upload-batches` | Person A | List of past uploads with status |
 | GET | `/analytics/overview` | Person B | Revenue totals, AOV, units sold |
 | GET | `/analytics/top-products` | Person B | Top sellers by revenue/units/margin |

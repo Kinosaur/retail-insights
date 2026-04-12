@@ -3,14 +3,11 @@ import io
 import pandas as pd
 from fastapi import HTTPException, UploadFile
 
-SALES_REQUIRED = {"sku_id", "sale_date", "quantity", "unit_price"}
-INVENTORY_REQUIRED = {"sku_id", "quantity_on_hand", "snapshot_date"}
+SALES_REQUIRED = {"product_id", "sale_date", "quantity", "unit_price"}
+INVENTORY_REQUIRED = {"product_id", "quantity_on_hand", "snapshot_date"}
 
-# Columns that arrive with different names in the raw CSVs
-_COLUMN_ALIASES = {
-    "sku": "sku_id",       # uniqlo_sg_products.csv uses "sku"
-    "name": "sku_name",    # uniqlo_sg_products.csv uses "name"
-}
+# Columns that may arrive with legacy names in raw CSVs
+_COLUMN_ALIASES: dict[str, str] = {}
 
 _ALLOWED_EXTENSIONS = {".csv", ".xlsx", ".xls"}
 

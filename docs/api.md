@@ -1,7 +1,7 @@
 # API Contract — Retail Insights Engine
 
 > This document must be agreed upon by Person A and Person B before writing any endpoint code.
-> Last updated: Day 2
+> Last updated: Day 4 (sku → product rename)
 
 ---
 
@@ -38,8 +38,8 @@ Upload a sales CSV or Excel file.
   "rows_accepted": 1487,
   "rows_rejected": 13,
   "errors": [
-    { "row": 47, "sku_id": null, "reason": "missing SKU" },
-    { "row": 103, "sku_id": "E461325-000", "reason": "negative quantity flagged as return" }
+    { "row": 47, "product_id": null, "reason": "missing product ID" },
+    { "row": 103, "product_id": "E461325-000", "reason": "negative quantity flagged as return" }
   ]
 }
 ```
@@ -83,8 +83,8 @@ Paginated list of all products.
   "limit": 50,
   "items": [
     {
-      "sku_id": "E483466-000",
-      "sku_name": "Linen V Neck T",
+      "product_id": "E483466-000",
+      "product_name": "Linen V Neck T",
       "category": "Women",
       "cost_price": 15.96,
       "sell_price": 39.90
@@ -95,14 +95,14 @@ Paginated list of all products.
 
 ---
 
-### `GET /products/{sku_id}`
+### `GET /products/{product_id}`
 Single product detail with sales history.
 
 **Response `200`:**
 ```json
 {
-  "sku_id": "E483466-000",
-  "sku_name": "Linen V Neck T",
+  "product_id": "E483466-000",
+  "product_name": "Linen V Neck T",
   "category": "Women",
   "cost_price": 15.96,
   "sell_price": 39.90,
@@ -115,7 +115,7 @@ Single product detail with sales history.
 **Error codes:**
 | Code | HTTP | Meaning |
 |---|---|---|
-| `PRODUCT_NOT_FOUND` | 404 | sku_id does not exist |
+| `PRODUCT_NOT_FOUND` | 404 | product_id does not exist |
 
 ---
 
@@ -154,7 +154,7 @@ List of all past upload batches.
   "period": { "start": "2023-01-01", "end": "2023-12-31" },
   "total_revenue": 125430.50,
   "total_units_sold": 8921,
-  "unique_skus_sold": 412,
+  "unique_products_sold": 412,
   "average_order_value": 14.06
 }
 ```
@@ -169,7 +169,7 @@ List of all past upload batches.
 {
   "by": "revenue",
   "items": [
-    { "sku_id": "E483466-000", "sku_name": "Linen V Neck T", "value": 4280.70 }
+    { "product_id": "E483466-000", "product_name": "Linen V Neck T", "value": 4280.70 }
   ]
 }
 ```
@@ -183,8 +183,8 @@ List of all past upload batches.
   "summary": { "A_count": 82, "B_count": 120, "C_count": 599 },
   "items": [
     {
-      "sku_id": "E483466-000",
-      "sku_name": "Linen V Neck T",
+      "product_id": "E483466-000",
+      "product_name": "Linen V Neck T",
       "class": "A",
       "revenue": 4280.70,
       "cumulative_pct": 12.3
@@ -204,8 +204,8 @@ List of all past upload batches.
   "threshold_days": 90,
   "items": [
     {
-      "sku_id": "E483466-000",
-      "sku_name": "Linen V Neck T",
+      "product_id": "E483466-000",
+      "product_name": "Linen V Neck T",
       "days_since_last_sale": 120,
       "quantity_on_hand": 45,
       "tied_up_capital": 718.20
@@ -226,8 +226,8 @@ List of all past upload batches.
   "safety_stock_days": 3,
   "items": [
     {
-      "sku_id": "E483466-000",
-      "sku_name": "Linen V Neck T",
+      "product_id": "E483466-000",
+      "product_name": "Linen V Neck T",
       "quantity_on_hand": 5,
       "reorder_point": 18,
       "recommended_order_qty": 55
@@ -239,13 +239,13 @@ List of all past upload batches.
 ---
 
 ### `GET /analytics/forecast`
-**Query params:** `sku_id` (required), `weeks` (default 4)
+**Query params:** `product_id` (required), `weeks` (default 4)
 
 **Response `200`:**
 ```json
 {
-  "sku_id": "E483466-000",
-  "sku_name": "Linen V Neck T",
+  "product_id": "E483466-000",
+  "product_name": "Linen V Neck T",
   "weeks_forecast": 4,
   "forecast": [
     { "week_start": "2024-01-01", "predicted_units": 12 },
@@ -285,7 +285,7 @@ Calls LLM with full analytics output. Result cached in `analysis_runs` table.
 ## Shared Rules
 
 - `upload_batches_id` is always a UUID4 string — Person B uses this to scope analytics queries
-- Auto-created SKUs (unknown at upload time) get `category = "uncategorized"`, `sku_name = sku_id`
+- Auto-created products (unknown at upload time) get `category = null`, `product_name = "UNKNOWN"`
 - Status values for `upload_batches`: `pending` | `success` | `partial` | `failed`
 - `partial` = some rows accepted, some rejected
 - `success` = all rows accepted

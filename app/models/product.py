@@ -1,12 +1,13 @@
 from sqlalchemy import Column, DateTime, Float, String, func
+
 from app.db import Base
 
 
-class Sku(Base):
-    __tablename__ = "sku"
+class Product(Base):
+    __tablename__ = "products"
 
-    sku_id = Column(String, primary_key=True, index=True)
-    sku_name = Column(String, nullable=False)
+    product_id = Column(String, primary_key=True, index=True)
+    product_name = Column(String, nullable=False)
     category = Column(String, nullable=True, index=True)
     cost_price = Column(Float, nullable=True)
     sell_price = Column(Float, nullable=True)

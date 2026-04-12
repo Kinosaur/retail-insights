@@ -5,12 +5,12 @@
 
 ---
 
-## Table: `sku`
+## Table: `products`
 
 | Column | Type | Constraints | Notes |
 |---|---|---|---|
-| `sku_id` | TEXT | PRIMARY KEY | e.g. `E483466-000` — always uppercase |
-| `sku_name` | TEXT | NOT NULL | Product display name |
+| `product_id` | TEXT | PRIMARY KEY | e.g. `E483466-000` — always uppercase |
+| `product_name` | TEXT | NOT NULL | Product display name |
 | `category` | TEXT | nullable, **indexed** | e.g. `Women`, `Men`, `Unisex` |
 | `cost_price` | REAL | nullable | From `uniqlo_sg_products.csv` |
 | `sell_price` | REAL | nullable | From `uniqlo_sg_products.csv` |
@@ -41,7 +41,7 @@
 |---|---|---|---|
 | `sale_id` | INTEGER | PRIMARY KEY autoincrement | |
 | `upload_batches_id` | TEXT | FK → `upload_batches.upload_batches_id`, indexed | Which upload this row came from |
-| `sku_id` | TEXT | FK → `sku.sku_id`, indexed | Auto-created if SKU unknown |
+| `product_id` | TEXT | FK → `products.product_id`, indexed | Auto-created if product unknown |
 | `sale_date` | DATE | NOT NULL, indexed | Format: `YYYY-MM-DD` |
 | `quantity` | INTEGER | NOT NULL | Negative = return |
 | `unit_price` | REAL | NOT NULL | Must be > 0 |
@@ -56,7 +56,7 @@
 |---|---|---|---|
 | `inventory_snapshots_id` | INTEGER | PRIMARY KEY autoincrement | |
 | `upload_batches_id` | TEXT | FK → `upload_batches.upload_batches_id`, indexed | Which upload this row came from |
-| `sku_id` | TEXT | FK → `sku.sku_id`, indexed | Auto-created if SKU unknown |
+| `product_id` | TEXT | FK → `products.product_id`, indexed | Auto-created if product unknown |
 | `quantity_on_hand` | INTEGER | NOT NULL | Must be >= 0 |
 | `snapshot_date` | DATE | NOT NULL, indexed | Format: `YYYY-MM-DD` |
 
@@ -82,20 +82,20 @@
 ## Validation Rules (enforced by Person A's pipeline)
 
 ### Sales rows
-- `sku_id` — strip whitespace, uppercase; reject if matches `INVALID-*` pattern
+- `product_id` — strip whitespace, uppercase; reject if matches `INVALID-*` pattern
 - `sale_date` — must parse as valid date; reject if future date
 - `quantity` — must be non-zero integer; flag negative as return (`is_return=1`)
 - `unit_price` — must be > 0 float; reject if zero or negative
 - `revenue` — computed and stored as `quantity × unit_price`
-- Duplicates — exact duplicate rows (same sku_id + date + qty + price) are silently deduplicated
+- Duplicates — exact duplicate rows (same product_id + date + qty + price) are silently deduplicated
 
 ### Inventory rows
-- `sku_id` — strip whitespace, uppercase; reject if matches `INVALID-*` pattern
+- `product_id` — strip whitespace, uppercase; reject if matches `INVALID-*` pattern
 - `quantity_on_hand` — must be >= 0 integer; reject negatives
 - `snapshot_date` — must parse as valid date
 
 ### Both
-- If `sku_id` not found in `sku` table → auto-insert with `sku_name="UNKNOWN"`, nulls for prices
+- If `product_id` not found in `products` table → auto-insert with `product_name="UNKNOWN"`, nulls for prices
 - Each rejected row is recorded with row number + reason in the upload response
 
 ---
@@ -111,8 +111,8 @@
   "rows_accepted": 54880,
   "rows_rejected": 13,
   "errors": [
-    { "row": 30, "sku_id": "INVALID-E483002-000", "reason": "invalid SKU format" },
-    { "row": 7,  "sku_id": "E461325-000",         "reason": "negative quantity flagged as return" }
+    { "row": 30, "product_id": "INVALID-E483002-000", "reason": "invalid product ID format" },
+    { "row": 7,  "product_id": "E461325-000",         "reason": "negative quantity flagged as return" }
   ]
 }
 ```

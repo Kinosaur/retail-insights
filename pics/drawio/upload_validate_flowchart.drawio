@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36" version="29.6.6">
   <diagram id="78GLvjxncTBtkbsSBJCh" name="Page-1">
-    <mxGraphModel dx="848" dy="651" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="1860" math="0" shadow="0">
+    <mxGraphModel dx="497" dy="381" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="1860" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -52,7 +52,7 @@
         <mxCell id="e-batch-d1" edge="1" parent="1" source="create-batch" style="edgeStyle=orthogonalEdgeStyle;rounded=1;jettySize=auto;endArrow=block;endFill=1;" target="d1" value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="d1" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" value="SKU missing&#xa;or unknown?" vertex="1">
+        <mxCell id="d1" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" value="Product ID missing&lt;br&gt;or unknown?" vertex="1">
           <mxGeometry height="70" width="250" x="400" y="775" as="geometry" />
         </mxCell>
         <mxCell id="d2" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" value="Date invalid&#xa;or missing?" vertex="1">
@@ -67,7 +67,7 @@
         <mxCell id="e-d2-d3" edge="1" parent="1" source="d2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;jettySize=auto;endArrow=block;endFill=1;" target="d3" value="No">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="d4" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" value="Duplicate row&#xa;(same SKU + date)?" vertex="1">
+        <mxCell id="d4" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" value="Duplicate row&lt;br&gt;(same Product ID + date)?" vertex="1">
           <mxGeometry height="70" width="250" x="400" y="1120" as="geometry" />
         </mxCell>
         <mxCell id="e-d3-d4" edge="1" parent="1" source="d3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;jettySize=auto;endArrow=block;endFill=1;" target="d4" value="No">

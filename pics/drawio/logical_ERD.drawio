@@ -1,11 +1,11 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36" version="29.6.6">
   <diagram name="Page-1" id="sUiIM-HWJ3cxkNZaEGyK">
-    <mxGraphModel dx="727" dy="558" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="1072" dy="822" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="sku-title" parent="1" style="shape=table;startSize=30;container=1;collapsible=0;childLayout=tableLayout;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=14;" value="sku" vertex="1">
-          <mxGeometry height="220" width="310" x="10" y="120" as="geometry" />
+        <mxCell id="sku-title" parent="1" style="shape=table;startSize=30;container=1;collapsible=0;childLayout=tableLayout;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=14;" value="products" vertex="1">
+          <mxGeometry height="220" width="310" x="90" y="240" as="geometry" />
         </mxCell>
         <mxCell id="sku-r1" parent="sku-title" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=12;top=0;left=0;right=0;bottom=1;" value="" vertex="1">
           <mxGeometry height="32" width="310" y="30" as="geometry" />
@@ -15,7 +15,7 @@
             <mxRectangle height="32" width="50" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="sku-r1-name" parent="sku-r1" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;" value="sku_id" vertex="1">
+        <mxCell id="sku-r1-name" parent="sku-r1" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;" value="product_id" vertex="1">
           <mxGeometry height="32" width="140" x="50" as="geometry">
             <mxRectangle height="32" width="140" as="alternateBounds" />
           </mxGeometry>
@@ -33,7 +33,7 @@
             <mxRectangle height="31" width="50" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="sku-r2-name" parent="sku-r2" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;" value="sku_name" vertex="1">
+        <mxCell id="sku-r2-name" parent="sku-r2" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;" value="product_name" vertex="1">
           <mxGeometry height="31" width="140" x="50" as="geometry">
             <mxRectangle height="31" width="140" as="alternateBounds" />
           </mxGeometry>
@@ -116,7 +116,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="ub-title" parent="1" style="shape=table;startSize=30;container=1;collapsible=0;childLayout=tableLayout;fillColor=#ffe6cc;strokeColor=#d6b656;fontStyle=1;fontSize=14;" value="upload_batches" vertex="1">
-          <mxGeometry height="252" width="310" x="850" y="120" as="geometry" />
+          <mxGeometry height="252" width="310" x="1150" y="250" as="geometry" />
         </mxCell>
         <mxCell id="ub-r1" parent="ub-title" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=12;top=0;left=0;right=0;bottom=1;" value="" vertex="1">
           <mxGeometry height="32" width="310" y="30" as="geometry" />
@@ -245,7 +245,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="sales-title" parent="1" style="shape=table;startSize=30;container=1;collapsible=0;childLayout=tableLayout;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=14;" value="sales" vertex="1">
-          <mxGeometry height="280" width="310" x="430" y="220" as="geometry" />
+          <mxGeometry height="280" width="310" x="610" y="190" as="geometry" />
         </mxCell>
         <mxCell id="sales-r1" parent="sales-title" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=12;top=0;left=0;right=0;bottom=1;" value="" vertex="1">
           <mxGeometry height="31" width="310" y="30" as="geometry" />
@@ -291,7 +291,7 @@
             <mxRectangle height="31" width="50" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="sales-r3-name" parent="sales-r3" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;" value="sku_id" vertex="1">
+        <mxCell id="sales-r3-name" parent="sales-r3" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;" value="product_id" vertex="1">
           <mxGeometry height="31" width="140" x="50" as="geometry">
             <mxRectangle height="31" width="140" as="alternateBounds" />
           </mxGeometry>
@@ -392,7 +392,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="inv-title" parent="1" style="shape=table;startSize=30;container=1;collapsible=0;childLayout=tableLayout;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=14;" value="inventory_snapshots" vertex="1">
-          <mxGeometry height="190" width="310" x="430" y="590" as="geometry" />
+          <mxGeometry height="190" width="310" x="610" y="610" as="geometry" />
         </mxCell>
         <mxCell id="inv-r1" parent="inv-title" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=12;top=0;left=0;right=0;bottom=1;" value="" vertex="1">
           <mxGeometry height="32" width="310" y="30" as="geometry" />
@@ -438,7 +438,7 @@
             <mxRectangle height="32" width="50" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="inv-r3-name" parent="inv-r3" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;" value="sku_id" vertex="1">
+        <mxCell id="inv-r3-name" parent="inv-r3" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;" value="product_id" vertex="1">
           <mxGeometry height="32" width="140" x="50" as="geometry">
             <mxRectangle height="32" width="140" as="alternateBounds" />
           </mxGeometry>
@@ -485,9 +485,14 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="fk1" edge="1" parent="1" source="sales-r3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;strokeColor=#6c8ebf;" target="sku-r1">
-          <mxGeometry relative="1" as="geometry" />
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="510" y="300" />
+              <mxPoint x="510" y="286" />
+            </Array>
+          </mxGeometry>
         </mxCell>
-        <mxCell id="fk1-label" connectable="0" parent="fk1" style="edgeLabel;fontSize=10;fontStyle=2;" value="sku_id" vertex="1">
+        <mxCell id="fk1-label" connectable="0" parent="fk1" style="edgeLabel;fontSize=10;fontStyle=2;" value="product_id" vertex="1">
           <mxGeometry relative="0.5" as="geometry" />
         </mxCell>
         <mxCell id="fk2" edge="1" parent="1" source="sales-r2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;strokeColor=#d6b656;" target="ub-r1">
@@ -499,7 +504,7 @@
         <mxCell id="fk3" edge="1" parent="1" source="inv-r3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;strokeColor=#6c8ebf;" target="sku-r1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="fk3-label" connectable="0" parent="fk3" style="edgeLabel;fontSize=10;fontStyle=2;" value="sku_id" vertex="1">
+        <mxCell id="fk3-label" connectable="0" parent="fk3" style="edgeLabel;fontSize=10;fontStyle=2;" value="product_id" vertex="1">
           <mxGeometry relative="0.5" as="geometry" />
         </mxCell>
         <mxCell id="fk4" edge="1" parent="1" source="inv-r2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;strokeColor=#d6b656;" target="ub-r1">

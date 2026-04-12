@@ -5,8 +5,8 @@ from sqlalchemy.orm import Session
 
 from app.db import get_db
 from app.models.inventory import InventorySnapshot
+from app.models.product import Product
 from app.models.sale import Sale
-from app.models.sku import Sku
 from app.models.upload_batch import UploadBatch
 from app.parsers.csv_parser import INVENTORY_REQUIRED, SALES_REQUIRED, parse_upload
 from app.schemas.upload import UploadError, UploadResponse
@@ -24,19 +24,19 @@ def _status(accepted: int, rejected: int) -> str:
     return "partial"
 
 
-def _ensure_skus_exist(db: Session, sku_ids: list[str]) -> None:
-    """Auto-insert any SKU not already in the sku table as UNKNOWN."""
+def _ensure_products_exist(db: Session, product_ids: list[str]) -> None:
+    """Auto-insert any product not already in the products table as UNKNOWN."""
     existing = {
-        row.sku_id
-        for row in db.query(Sku.sku_id).filter(Sku.sku_id.in_(sku_ids)).all()
+        row.product_id
+        for row in db.query(Product.product_id).filter(Product.product_id.in_(product_ids)).all()
     }
-    new_skus = [
-        Sku(sku_id=sid, sku_name="UNKNOWN", category=None)
-        for sid in set(sku_ids)
-        if sid not in existing
+    new_products = [
+        Product(product_id=pid, product_name="UNKNOWN", category=None)
+        for pid in set(product_ids)
+        if pid not in existing
     ]
-    if new_skus:
-        db.bulk_save_objects(new_skus)
+    if new_products:
+        db.add_all(new_products)
         db.flush()
 
 
@@ -60,8 +60,8 @@ async def upload_sales(
     accepted, errors = validate_sales(df)
 
     if accepted:
-        _ensure_skus_exist(db, [r["sku_id"] for r in accepted])
-        db.bulk_save_objects([Sale(upload_batches_id=batch_id, **r) for r in accepted])
+        _ensure_products_exist(db, [r["product_id"] for r in accepted])
+        db.add_all([Sale(upload_batches_id=batch_id, **r) for r in accepted])
 
     batch.rows_accepted = len(accepted)
     batch.rows_rejected = len(errors)
@@ -100,10 +100,8 @@ async def upload_inventory(
     accepted, errors = validate_inventory(df)
 
     if accepted:
-        _ensure_skus_exist(db, [r["sku_id"] for r in accepted])
-        db.bulk_save_objects([
-            InventorySnapshot(upload_batches_id=batch_id, **r) for r in accepted
-        ])
+        _ensure_products_exist(db, [r["product_id"] for r in accepted])
+        db.add_all([InventorySnapshot(upload_batches_id=batch_id, **r) for r in accepted])
 
     batch.rows_accepted = len(accepted)
     batch.rows_rejected = len(errors)

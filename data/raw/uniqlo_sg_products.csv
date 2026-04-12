@@ -1,4 +1,4 @@
-sku,name,category,cost_price,sell_price
+product_id,product_name,category,cost_price,sell_price
 E483466-000,Linen V Neck T,Women,15.96,39.9
 E487277-000,Mini Short Sleeve T-Shirt Striped,Women,5.96,14.9
 E484266-001,Mini T Striped,Women,7.96,19.9

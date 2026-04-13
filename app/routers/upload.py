@@ -1,6 +1,7 @@
 import uuid
 
 from fastapi import APIRouter, Depends, File, UploadFile
+from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.orm import Session
 
@@ -28,6 +29,8 @@ def _status(accepted: int, rejected: int) -> str:
 
 def _ensure_products_exist(db: Session, product_ids: list[str]) -> None:
     """Auto-insert any product not already in the products table as UNKNOWN."""
+    if not product_ids:
+        return
     existing = {
         row.product_id
         for row in db.query(Product.product_id).filter(Product.product_id.in_(product_ids)).all()
@@ -53,7 +56,7 @@ async def upload_sales(
     batch = UploadBatch(
         upload_batches_id=batch_id,
         file_type="sales",
-        filename=file.filename,
+        filename=file.filename or "unnamed",
         status="processing",
     )
     db.add(batch)
@@ -73,7 +76,7 @@ async def upload_sales(
     return UploadResponse(
         upload_batches_id=batch_id,
         file_type="sales",
-        filename=file.filename,
+        filename=file.filename or "unnamed",
         status=batch.status,
         rows_total=len(accepted) + len(errors),
         rows_accepted=len(accepted),
@@ -93,7 +96,7 @@ async def upload_inventory(
     batch = UploadBatch(
         upload_batches_id=batch_id,
         file_type="inventory",
-        filename=file.filename,
+        filename=file.filename or "unnamed",
         status="processing",
     )
     db.add(batch)
@@ -113,7 +116,7 @@ async def upload_inventory(
     return UploadResponse(
         upload_batches_id=batch_id,
         file_type="inventory",
-        filename=file.filename,
+        filename=file.filename or "unnamed",
         status=batch.status,
         rows_total=len(accepted) + len(errors),
         rows_accepted=len(accepted),
@@ -137,7 +140,7 @@ async def upload_products(
     batch = UploadBatch(
         upload_batches_id=batch_id,
         file_type="products",
-        filename=file.filename,
+        filename=file.filename or "unnamed",
         status="processing",
     )
     db.add(batch)
@@ -154,6 +157,7 @@ async def upload_products(
                 "category": stmt.excluded.category,
                 "cost_price": stmt.excluded.cost_price,
                 "sell_price": stmt.excluded.sell_price,
+                "updated_at": func.now(),   # onupdate= doesn't fire on pg_insert upserts
             },
         )
         db.execute(stmt)
@@ -166,7 +170,7 @@ async def upload_products(
     return UploadResponse(
         upload_batches_id=batch_id,
         file_type="products",
-        filename=file.filename,
+        filename=file.filename or "unnamed",
         status=batch.status,
         rows_total=len(accepted) + len(errors),
         rows_accepted=len(accepted),

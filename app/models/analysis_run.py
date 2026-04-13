@@ -20,4 +20,4 @@ class AnalysisRun(Base):
     metrics_json = Column(Text, nullable=True)                  # JSON of analytics data fed to LLM
     ai_summary_text = Column(Text, nullable=True)               # plain-English LLM response
     status = Column(String, nullable=False, default="pending")  # pending | done | failed
-    created_at = Column(DateTime, server_default=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now())

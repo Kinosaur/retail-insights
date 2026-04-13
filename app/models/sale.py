@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Date, Float, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, Date, Float, ForeignKey, Integer, String, false
 from app.db import Base
 
 
@@ -12,4 +12,4 @@ class Sale(Base):
     quantity = Column(Integer, nullable=False)           # negative = return
     unit_price = Column(Float, nullable=False)
     revenue = Column(Float, nullable=False)              # quantity * unit_price — kept for analytics
-    is_return = Column(Integer, default=0)               # 0 = sale, 1 = return
+    is_return = Column(Boolean, default=False, server_default=false(), nullable=False)

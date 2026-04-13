@@ -34,7 +34,7 @@ def validate_sales(df: pd.DataFrame) -> tuple[list[dict], list[dict]]:
             if pd.isna(parsed):
                 raise ValueError("empty date")
             sale_date = parsed.date()
-        except Exception:
+        except (ValueError, TypeError, OverflowError):
             errors.append({"row": row_num, "product_id": product_id, "reason": "invalid date format"})
             continue
         if sale_date > today:

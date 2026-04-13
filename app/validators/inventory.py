@@ -15,7 +15,9 @@ def validate_inventory(df: pd.DataFrame) -> tuple[list[dict], list[dict]]:
         row_num = int(i) + 2  # +1 for 0-index, +1 for header row
 
         # 1. product_id — strip, uppercase, reject INVALID-* pattern
-        raw_id = str(row.get("product_id", "")).strip()
+        #    pandas stores empty cells as float NaN; str(NaN) == "nan" which is truthy.
+        raw_id_val = row.get("product_id", "")
+        raw_id = "" if pd.isna(raw_id_val) else str(raw_id_val).strip()
         product_id = raw_id.upper()
         if not product_id or product_id.startswith("INVALID-"):
             errors.append({"row": row_num, "product_id": product_id or None, "reason": "missing or invalid product ID"})
@@ -37,7 +39,7 @@ def validate_inventory(df: pd.DataFrame) -> tuple[list[dict], list[dict]]:
             if pd.isna(parsed):
                 raise ValueError("empty date")
             snapshot_date = parsed.date()
-        except Exception:
+        except (ValueError, TypeError, OverflowError):
             errors.append({"row": row_num, "product_id": product_id, "reason": "invalid date format"})
             continue
 

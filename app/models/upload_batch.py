@@ -11,4 +11,4 @@ class UploadBatch(Base):
     status = Column(String, nullable=False, default="pending")  # pending | success | partial | failed
     rows_accepted = Column(Integer, default=0)
     rows_rejected = Column(Integer, default=0)
-    created_at = Column(DateTime, server_default=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now())

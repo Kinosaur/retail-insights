@@ -1,10 +1,11 @@
 """
-Seed script — uploads all 3 raw CSVs into the running API.
+Seed script — uploads all 3 raw CSVs into the running API (targets Neon via DATABASE_URL).
 
 Usage:
-    python scripts/seed.py            # upload (skip if already loaded)
-    python scripts/seed.py --fresh    # wipe DB first, then upload
+    python scripts/seed.py            # upload (warns if already loaded)
+    python scripts/seed.py --fresh    # shows wipe instructions, then exits
 
+NOTE: This seeds the shared Neon database. Tell Friend B before running --fresh.
 Requires the API server to be running:
     make run   (in another terminal)
 """
@@ -42,14 +43,22 @@ def check_empty():
 
 def wipe_via_api():
     """
-    There is no DELETE /all endpoint — wipe is done directly via psql.
-    This function just warns the user.
+    No DELETE /all endpoint exists — wipe runs directly against Neon via SQLAlchemy.
+    Warns the user since this affects the shared cloud database.
     """
     print()
-    print("  --fresh requires manual DB wipe. Run this first:")
+    print("  ⚠  --fresh wipes the shared Neon database. Tell Friend B first.")
     print()
-    print("  psql -U postgres -d retail_insights -c \\")
-    print('  "TRUNCATE TABLE sales, inventory_snapshots, upload_batches, products RESTART IDENTITY CASCADE;"')
+    print("  Run this to wipe Neon, then re-run seed.py without --fresh:")
+    print()
+    print("  python -c \"")
+    print("  from sqlalchemy import create_engine, text; import os; from dotenv import load_dotenv")
+    print("  load_dotenv()")
+    print("  e = create_engine(os.getenv('DATABASE_URL'))")
+    print("  with e.connect() as c:")
+    print("      c.execute(text('TRUNCATE TABLE sales, inventory_snapshots, upload_batches, products RESTART IDENTITY CASCADE'))")
+    print("      c.commit()")
+    print("  \"")
     print()
     sys.exit(0)
 

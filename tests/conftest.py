@@ -1,9 +1,11 @@
 """
 Shared fixtures for the Retail Insights Engine test suite.
 
-Uses a dedicated `retail_insights_test` PostgreSQL database so the
-PostgreSQL-specific upsert in POST /upload/products works correctly.
-Tables are created once per session and truncated between each test.
+Uses a dedicated local `retail_insights_test` PostgreSQL database — never Neon.
+Tests wipe all tables between runs so they must NEVER point at the shared cloud DB.
+
+Requires TEST_DATABASE_URL in your .env file:
+    TEST_DATABASE_URL=postgresql+psycopg://postgres:YOUR_PASSWORD@localhost:5432/retail_insights_test
 """
 import os
 from io import BytesIO
@@ -17,10 +19,14 @@ import app.models  # noqa: F401 — registers all models with Base
 from app.db import Base, get_db
 from app.main import app
 
-TEST_DATABASE_URL = os.getenv(
-    "TEST_DATABASE_URL",
-    "postgresql+psycopg://postgres:kino@localhost:5433/retail_insights_test",
-)
+TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL")
+if not TEST_DATABASE_URL:
+    raise RuntimeError(
+        "TEST_DATABASE_URL is not set.\n"
+        "Add it to your .env file:\n"
+        "  TEST_DATABASE_URL=postgresql+psycopg://postgres:YOUR_PASSWORD@localhost:5432/retail_insights_test\n"
+        "Never point TEST_DATABASE_URL at Neon — tests wipe all tables between runs."
+    )
 
 engine = create_engine(TEST_DATABASE_URL)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

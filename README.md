@@ -32,51 +32,45 @@ Small clothing shops typically manage inventory and sales in spreadsheets. They 
 
 ## Quickstart
 
-**Prerequisites:** Python 3.11+, PostgreSQL installed and running.
+**Prerequisites:** Python 3.11+, PostgreSQL installed locally (for tests only).
+
+The main database runs on [Neon](https://neon.tech) (cloud PostgreSQL, Singapore region) — no local DB setup needed for the app.
 
 ```bash
 git clone https://github.com/Kinosaur/retail-insights.git
 cd retail-insights
 
-cp .env.example .env       # fill in your PostgreSQL password
+cp .env.example .env       # fill in the Neon password (get from Person A)
 
 make install               # create venv + install dependencies
-make db-create             # prints the 2 database creation commands to run
-make migrate               # create all tables via Alembic
-```
-
-Then in **Terminal 1** (keep it running):
-```bash
-make run                   # starts API server on :8000
-```
-
-In **Terminal 2**:
-```bash
-make seed                  # uploads all 3 CSVs — loads the full dataset
+make run                   # start API server on :8000 — data already in Neon
 ```
 
 API docs: `http://localhost:8000/docs`
 
 ---
 
-## Teammate Setup (Person B)
+## Teammate Setup (Friend B)
 
-Same steps as above. You own the analytics endpoints — everything in `app/routers/analytics.py`, `app/services/analytics.py`, and related schemas.
+Same as Quickstart above — 3 commands total. Database lives on Neon so data is already there.
+
+You own the analytics endpoints — everything in `app/routers/analytics.py`, `app/services/analytics.py`, and related schemas.
 
 **You will never need to:**
 - Edit the database schema or write migrations (Person A owns this)
 - Edit any CSV files or run the generator
-- Touch the upload pipeline
+- Seed the database (already loaded on Neon)
+- Run `alembic upgrade head` (Person A applies migrations to Neon)
 
 **Staying in sync with Person A:**
 
 | Person A does | You do |
 |---------------|--------|
 | Pushes code changes | `git pull` → restart server |
-| Pushes a schema change | `git pull` → `make migrate` |
-| Pushes new CSV data | `git pull` → `make reseed` |
+| Pushes a schema change | `git pull` → restart server (migration already on Neon) |
+| Uploads new data to Neon | `git pull` → restart server (data already in Neon) |
 
-**`make reseed`** = wipe your local DB data + re-upload all CSVs fresh. Run it whenever Person A tells you data changed.
+Everything syncs through Neon automatically — no local DB management needed.
 
 ---
 

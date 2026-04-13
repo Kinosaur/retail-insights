@@ -1,6 +1,7 @@
 import uuid
 
 from fastapi import APIRouter, Depends, File, UploadFile
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.orm import Session
 
 from app.db import get_db
@@ -8,9 +9,10 @@ from app.models.inventory import InventorySnapshot
 from app.models.product import Product
 from app.models.sale import Sale
 from app.models.upload_batch import UploadBatch
-from app.parsers.csv_parser import INVENTORY_REQUIRED, SALES_REQUIRED, parse_upload
+from app.parsers.csv_parser import INVENTORY_REQUIRED, PRODUCTS_REQUIRED, SALES_REQUIRED, parse_upload
 from app.schemas.upload import UploadError, UploadResponse
 from app.validators.inventory import validate_inventory
+from app.validators.products import validate_products
 from app.validators.sales import validate_sales
 
 router = APIRouter(prefix="/upload", tags=["upload"])
@@ -111,6 +113,59 @@ async def upload_inventory(
     return UploadResponse(
         upload_batches_id=batch_id,
         file_type="inventory",
+        filename=file.filename,
+        status=batch.status,
+        rows_total=len(accepted) + len(errors),
+        rows_accepted=len(accepted),
+        rows_rejected=len(errors),
+        errors=[UploadError(**e) for e in errors],
+    )
+
+
+@router.post("/products", response_model=UploadResponse)
+async def upload_products(
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+) -> UploadResponse:
+    """
+    Load or refresh the product catalog (upsert).
+    Existing products are updated; new ones are inserted.
+    """
+    df = await parse_upload(file, PRODUCTS_REQUIRED)
+
+    batch_id = str(uuid.uuid4())
+    batch = UploadBatch(
+        upload_batches_id=batch_id,
+        file_type="products",
+        filename=file.filename,
+        status="processing",
+    )
+    db.add(batch)
+    db.flush()
+
+    accepted, errors = validate_products(df)
+
+    if accepted:
+        stmt = pg_insert(Product).values(accepted)
+        stmt = stmt.on_conflict_do_update(
+            index_elements=["product_id"],
+            set_={
+                "product_name": stmt.excluded.product_name,
+                "category": stmt.excluded.category,
+                "cost_price": stmt.excluded.cost_price,
+                "sell_price": stmt.excluded.sell_price,
+            },
+        )
+        db.execute(stmt)
+
+    batch.rows_accepted = len(accepted)
+    batch.rows_rejected = len(errors)
+    batch.status = _status(len(accepted), len(errors))
+    db.commit()
+
+    return UploadResponse(
+        upload_batches_id=batch_id,
+        file_type="products",
         filename=file.filename,
         status=batch.status,
         rows_total=len(accepted) + len(errors),

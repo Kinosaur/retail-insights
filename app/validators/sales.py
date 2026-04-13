@@ -1,3 +1,4 @@
+import math
 from datetime import date
 
 import pandas as pd
@@ -48,9 +49,11 @@ def validate_sales(df: pd.DataFrame) -> tuple[list[dict], list[dict]]:
             errors.append({"row": row_num, "product_id": product_id, "reason": "quantity cannot be zero"})
             continue
 
-        # 4. unit_price — must be > 0
+        # 4. unit_price — must be a real number > 0 (NaN passes <= 0 check, so guard explicitly)
         try:
             unit_price = float(row["unit_price"])
+            if math.isnan(unit_price):
+                raise ValueError("NaN")
         except (ValueError, TypeError):
             errors.append({"row": row_num, "product_id": product_id, "reason": "unit_price must be a number"})
             continue

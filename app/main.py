@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 import app.models  # noqa: F401 — registers all models on Base.metadata
-from app.routers import upload
+from app.routers import batches, products, upload
 
 app = FastAPI(
     title="Retail Insights Engine",
@@ -10,6 +10,8 @@ app = FastAPI(
 )
 
 app.include_router(upload.router)
+app.include_router(products.router)
+app.include_router(batches.router)
 
 
 @app.get("/health")

@@ -5,6 +5,7 @@ from fastapi import HTTPException, UploadFile
 
 SALES_REQUIRED = {"product_id", "sale_date", "quantity", "unit_price"}
 INVENTORY_REQUIRED = {"product_id", "quantity_on_hand", "snapshot_date"}
+PRODUCTS_REQUIRED = {"product_id", "product_name"}
 
 # Columns that may arrive with legacy names in raw CSVs
 _COLUMN_ALIASES: dict[str, str] = {}

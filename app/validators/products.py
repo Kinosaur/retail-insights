@@ -15,14 +15,18 @@ def validate_products(df: pd.DataFrame) -> tuple[list[dict], list[dict]]:
         row_num = int(i) + 2
 
         # 1. product_id — required, strip, uppercase
-        raw_id = str(row.get("product_id", "")).strip()
+        #    pandas stores empty cells as float NaN; str(NaN) == "nan" which is truthy,
+        #    so we must check pd.isna() before stringifying.
+        raw_id_val = row.get("product_id", "")
+        raw_id = "" if pd.isna(raw_id_val) else str(raw_id_val).strip()
         product_id = raw_id.upper()
         if not product_id:
             errors.append({"row": row_num, "product_id": None, "reason": "missing product ID"})
             continue
 
         # 2. product_name — required
-        product_name = str(row.get("product_name", "")).strip()
+        raw_name_val = row.get("product_name", "")
+        product_name = "" if pd.isna(raw_name_val) else str(raw_name_val).strip()
         if not product_name:
             errors.append({"row": row_num, "product_id": product_id, "reason": "missing product name"})
             continue

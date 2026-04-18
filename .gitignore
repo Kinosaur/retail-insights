@@ -34,3 +34,5 @@ htmlcov/
 /sales.csv
 /inventory.csv
 /uniqlo_sg_products.csv
+
+.claude

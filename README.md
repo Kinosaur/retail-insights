@@ -42,11 +42,12 @@ Small clothing shops typically manage inventory and sales in spreadsheets. They 
 ```bash
 git clone https://github.com/Kinosaur/retail-insights.git
 cd retail-insights
-
-cp .env.example .env       # fill in the Neon password (get from Person A)
-
-make install               # create venv + install dependencies
-make run                   # start API server on :8000 — data already in Neon
+cp .env.example .env
+python -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8000
 ```
 
 ### Windows
@@ -54,15 +55,15 @@ make run                   # start API server on :8000 — data already in Neon
 ```bat
 git clone https://github.com/Kinosaur/retail-insights.git
 cd retail-insights
-
 copy .env.example .env
-REM Open .env and fill in the Neon password from Person A
-
-scripts\setup_windows.bat
-
-REM Start the server:
+python -m venv .venv
+.venv\Scripts\activate
+pip install --upgrade pip
+pip install -r requirements.txt
 .venv\Scripts\uvicorn app.main:app --reload --port 8000
 ```
+
+Open `.env` and paste the Neon password from Person A before starting the server.
 
 API docs: `http://localhost:8000/docs`
 
@@ -70,11 +71,7 @@ API docs: `http://localhost:8000/docs`
 
 ## Teammate Setup (Friend B)
 
-Database lives on Neon — data is already there. You just need to run the server.
-
-**Mac:** follow the Mac Quickstart above.
-
-**Windows:** run `scripts\setup_windows.bat` — it installs everything and prints your next steps.
+Database lives on Neon — data is already there. Follow the Quickstart above for your OS (Mac or Windows). Once the server is running you are ready to go.
 
 You own the analytics endpoints — everything in `app/routers/analytics.py`, `app/services/analytics.py`, and related schemas.
 

@@ -32,9 +32,12 @@ Small clothing shops typically manage inventory and sales in spreadsheets. They 
 
 ## Quickstart
 
-**Prerequisites:** Python 3.11+, PostgreSQL installed locally (for tests only).
+**Prerequisites:**
+- **Python 3.13.0** — download from [python.org](https://python.org)
+- **PostgreSQL** — installed locally (for running tests only, not the app)
+- The main database runs on [Neon](https://neon.tech) (cloud PostgreSQL, Singapore region) — no local DB setup needed for the app
 
-The main database runs on [Neon](https://neon.tech) (cloud PostgreSQL, Singapore region) — no local DB setup needed for the app.
+### Mac / Linux
 
 ```bash
 git clone https://github.com/Kinosaur/retail-insights.git
@@ -46,13 +49,32 @@ make install               # create venv + install dependencies
 make run                   # start API server on :8000 — data already in Neon
 ```
 
+### Windows
+
+```bat
+git clone https://github.com/Kinosaur/retail-insights.git
+cd retail-insights
+
+copy .env.example .env
+REM Open .env and fill in the Neon password from Person A
+
+scripts\setup_windows.bat
+
+REM Start the server:
+.venv\Scripts\uvicorn app.main:app --reload --port 8000
+```
+
 API docs: `http://localhost:8000/docs`
 
 ---
 
 ## Teammate Setup (Friend B)
 
-Same as Quickstart above — 3 commands total. Database lives on Neon so data is already there.
+Database lives on Neon — data is already there. You just need to run the server.
+
+**Mac:** follow the Mac Quickstart above.
+
+**Windows:** run `scripts\setup_windows.bat` — it installs everything and prints your next steps.
 
 You own the analytics endpoints — everything in `app/routers/analytics.py`, `app/services/analytics.py`, and related schemas.
 
@@ -155,7 +177,7 @@ To regenerate: `python generator/generate_dataset.py`
 
 | Layer | Choice |
 |-------|--------|
-| Language | Python 3.13 |
+| Language | Python 3.13.0 |
 | Framework | FastAPI |
 | Validation | Pydantic v2 |
 | Data processing | Pandas |

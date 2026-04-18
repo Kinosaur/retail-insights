@@ -2,6 +2,7 @@
 fastapi==0.115.0
 uvicorn[standard]==0.30.6
 python-multipart==0.0.12     # required for FastAPI file uploads (UploadFile)
+python-dotenv==1.0.1         # loads .env file into os.environ
 
 # Database
 sqlalchemy==2.0.35

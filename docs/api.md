@@ -217,13 +217,13 @@ List of all past upload batches.
 ---
 
 ### `GET /analytics/reorder`
-**Query params:** `lead_time_days` (default 7), `safety_stock_days` (default 3)
+**Query params:** `lead_time_days` (default 14), `safety_stock_days` (default 7)
 
 **Response `200`:**
 ```json
 {
-  "lead_time_days": 7,
-  "safety_stock_days": 3,
+  "lead_time_days": 14,
+  "safety_stock_days": 7,
   "items": [
     {
       "product_id": "E483466-000",

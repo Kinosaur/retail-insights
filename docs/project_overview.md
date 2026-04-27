@@ -24,7 +24,7 @@ This project automates all of that through a clean API.
 
 **Primary user:** A small clothing shop owner or operations manager who already collects sales and inventory data in spreadsheets (CSV or Excel) and wants actionable insights without hiring a data analyst.
 
-**Context:** The project is built and demonstrated using synthetic 2023 data modelled on Uniqlo Singapore — 801 real product SKUs, realistic Singapore retail seasonality (Chinese New Year, Hari Raya, National Day, Deepavali, 11.11, year-end sale), and ~50,000 sales transactions.
+**Context:** The project is built and demonstrated using synthetic 2023–2025 data modelled on Uniqlo Singapore — 801 real product SKUs, realistic Singapore retail seasonality (Chinese New Year, Hari Raya, National Day, Deepavali, 11.11, year-end sale), and ~155,000 sales transactions across three years with year-over-year growth baked in.
 
 ---
 
@@ -100,19 +100,19 @@ Both engineers connect to the same shared Neon cloud database. Person A manages 
 
 ## Data
 
-The system is demonstrated with synthetic 2023 data built to resemble a real Uniqlo Singapore store:
+The system is demonstrated with synthetic 2023–2025 data built to resemble a real Uniqlo Singapore store:
 
 | Table | Rows | Description |
 |-------|------|-------------|
 | `products` | 801 | Real Uniqlo SG product names and SKUs, with cost and sell prices |
-| `sales` | 50,220 | Accepted sales transactions across all of 2023 |
-| `inventory_snapshots` | 9,118 | Monthly stock-on-hand snapshots across 12 months |
+| `sales` | 155,090 | Accepted sales transactions across 2023–2025 (YoY growth: +5% in 2024, +8% in 2025) |
+| `inventory_snapshots` | 27,403 | Monthly stock-on-hand snapshots across 36 months |
 | `upload_batches` | — | Audit log of every file upload |
 | `analysis_runs` | — | Cache for AI-generated summaries |
 
 The dataset includes ~5% intentionally dirty rows (missing IDs, invalid dates, zero quantities) to exercise and demonstrate the validation pipeline.
 
-Seasonality modelled: Chinese New Year (Jan–Feb spike), Hari Raya (Apr), National Day (Aug), Deepavali (Nov), 11.11 campaign (Nov), year-end sale (Dec). AIRism products sell year-round due to Singapore's climate.
+Seasonality modelled per year with accurate Singapore public holiday dates: Chinese New Year (Jan–Feb spike), Hari Raya (lunar date shifts per year), National Day (Aug 9), Deepavali (Oct–Nov), 11.11 campaign (Nov), year-end sale (Dec). AIRism products sell year-round due to Singapore's climate. Five product seasonality categories: AIRism, layering, light wear, innerwear, kids.
 
 ---
 
@@ -134,13 +134,13 @@ All timestamps are stored in UTC with timezone awareness (`TIMESTAMPTZ`). Sales 
 
 ## Project Status
 
-Day 9 of 20. Ingestion pipeline and analytics endpoints are complete. Forecasting and AI layer are next.
+Day 12 of 20. Ingestion pipeline, all analytics endpoints, and forecasting are complete. AI explanation layer is next.
 
 | Phase | Days | Status |
 |-------|------|--------|
 | Setup, schema, API contract | 1–2 | ✅ Done |
 | Upload pipeline, validation, GET endpoints, tests | 3–5 | ✅ Done |
 | Core analytics endpoints | 6–9 | ✅ Done |
-| Reorder + forecast | 10–12 | 🔨 Next |
-| AI explanation layer | 13–15 | ⏳ Upcoming |
+| Reorder + forecast | 10–12 | ✅ Done |
+| AI explanation layer | 13–15 | 🔨 Next |
 | Polish, README, demo | 16–20 | ⏳ Upcoming |

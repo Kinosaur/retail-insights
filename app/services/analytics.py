@@ -1,6 +1,6 @@
 from datetime import date, timedelta
 
-from sqlalchemy import func, select
+from sqlalchemy import Date, cast, func, select
 from sqlalchemy.orm import Session
 
 from app.models.inventory import InventorySnapshot
@@ -51,6 +51,7 @@ def get_overview(db: Session, start: date, end: date) -> dict:
         select(
             func.coalesce(func.sum(Sale.revenue), 0.0).label("total_revenue"),
             func.coalesce(func.sum(Sale.quantity), 0).label("total_units"),
+            func.coalesce(func.count(Sale.sale_id), 0).label("total_transactions"),
             func.coalesce(func.count(Sale.product_id.distinct()), 0).label("unique_products"),
         ).where(
             Sale.is_return == False,  # noqa: E712
@@ -61,8 +62,9 @@ def get_overview(db: Session, start: date, end: date) -> dict:
 
     total_revenue = float(row.total_revenue)
     total_units = int(row.total_units)
+    total_transactions = int(row.total_transactions)
     unique_products = int(row.unique_products)
-    aov = round(total_revenue / total_units, 2) if total_units > 0 else 0.0
+    aov = round(total_revenue / total_transactions, 2) if total_transactions > 0 else 0.0
 
     return {
         "period": {"start": start, "end": end},
@@ -267,3 +269,67 @@ def get_reorder(db: Session, lead_time_days: int, safety_stock_days: int) -> dic
         })
 
     return {"lead_time_days": lead_time_days, "safety_stock_days": safety_stock_days, "items": items}
+
+
+# ---------------------------------------------------------------------------
+# Forecast (Simple Moving Average)
+# ---------------------------------------------------------------------------
+
+_SMA_WINDOW = 8  # number of historical weeks used to compute the average
+_DISCLAIMER = "SMA baseline only. Does not account for seasonality or trends."
+
+
+def get_forecast(db: Session, product_id: str, weeks: int) -> dict | None:
+    pid = product_id.upper()
+
+    product = db.execute(
+        select(Product).where(Product.product_id == pid)
+    ).scalar_one_or_none()
+    if not product:
+        return None
+
+    # Weekly sales totals — date_trunc gives the Monday of each ISO week
+    week_expr = cast(func.date_trunc("week", Sale.sale_date), Date)
+    rows = db.execute(
+        select(
+            week_expr.label("week_start"),
+            func.sum(Sale.quantity).label("units"),
+        )
+        .where(Sale.product_id == pid, Sale.is_return == False)  # noqa: E712
+        .group_by(week_expr)
+        .order_by(week_expr)
+    ).all()
+
+    if not rows:
+        return {
+            "product_id": product.product_id,
+            "product_name": product.product_name,
+            "weeks_forecast": weeks,
+            "forecast": [],
+            "method": "simple_moving_average",
+            "disclaimer": "No sales history found for this product — forecast unavailable.",
+        }
+
+    # SMA over the last _SMA_WINDOW weeks (or fewer if not enough history)
+    window = rows[-_SMA_WINDOW:]
+    avg_units = sum(int(r.units) for r in window) / len(window)
+    predicted = max(0, round(avg_units))
+
+    # Project forward from the last recorded week
+    last_week: date = rows[-1].week_start
+    forecast = [
+        {
+            "week_start": last_week + timedelta(weeks=i),
+            "predicted_units": predicted,
+        }
+        for i in range(1, weeks + 1)
+    ]
+
+    return {
+        "product_id": product.product_id,
+        "product_name": product.product_name,
+        "weeks_forecast": weeks,
+        "forecast": forecast,
+        "method": "simple_moving_average",
+        "disclaimer": _DISCLAIMER,
+    }

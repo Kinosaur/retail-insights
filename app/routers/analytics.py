@@ -7,6 +7,7 @@ from app.db import get_db
 from app.schemas.analytics import (
     ABCResponse,
     DeadStockResponse,
+    ForecastResponse,
     OverviewResponse,
     ReorderResponse,
     TopProductsResponse,
@@ -14,6 +15,7 @@ from app.schemas.analytics import (
 from app.services.analytics import (
     get_abc,
     get_dead_stock,
+    get_forecast,
     get_overview,
     get_reorder,
     get_top_products,
@@ -24,8 +26,8 @@ router = APIRouter(prefix="/analytics", tags=["analytics"])
 
 @router.get("/overview", response_model=OverviewResponse)
 def overview(
-    start: date = Query(default=date(2023, 1, 1), description="Start date (inclusive)"),
-    end: date = Query(default=date(2023, 12, 31), description="End date (inclusive)"),
+    start: date = Query(default=date(2025, 1, 1), description="Start date (inclusive)"),
+    end: date = Query(default=date(2025, 12, 31), description="End date (inclusive)"),
     db: Session = Depends(get_db),
 ) -> OverviewResponse:
     if start > end:
@@ -62,3 +64,18 @@ def reorder(
     db: Session = Depends(get_db),
 ) -> ReorderResponse:
     return get_reorder(db, lead_time_days, safety_stock_days)
+
+
+@router.get("/forecast", response_model=ForecastResponse)
+def forecast(
+    product_id: str = Query(..., description="Product ID to forecast (e.g. E483831-000)"),
+    weeks: int = Query(default=4, ge=1, le=12, description="Number of weeks to project forward"),
+    db: Session = Depends(get_db),
+) -> ForecastResponse:
+    result = get_forecast(db, product_id, weeks)
+    if result is None:
+        raise HTTPException(
+            status_code=404,
+            detail={"code": "PRODUCT_NOT_FOUND", "message": f"No product with id '{product_id}'"},
+        )
+    return result

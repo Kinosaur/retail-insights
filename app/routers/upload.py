@@ -27,14 +27,16 @@ def _status(accepted: int, rejected: int) -> str:
     return "partial"
 
 
+_INSERT_CHUNK = 5_000   # max rows per flush to stay within psycopg3 param limits
+
+
 def _ensure_products_exist(db: Session, product_ids: list[str]) -> None:
     """Auto-insert any product not already in the products table as UNKNOWN."""
     if not product_ids:
         return
-    existing = {
-        row.product_id
-        for row in db.query(Product.product_id).filter(Product.product_id.in_(product_ids)).all()
-    }
+    # Fetch ALL existing product_ids without an IN filter — avoids the
+    # 65535-parameter PostgreSQL limit when product_ids has thousands of entries.
+    existing = {row.product_id for row in db.query(Product.product_id).all()}
     new_products = [
         Product(product_id=pid, product_name="UNKNOWN", category=None)
         for pid in set(product_ids)
@@ -66,7 +68,9 @@ async def upload_sales(
 
     if accepted:
         _ensure_products_exist(db, [r["product_id"] for r in accepted])
-        db.add_all([Sale(upload_batches_id=batch_id, **r) for r in accepted])
+        for i in range(0, len(accepted), _INSERT_CHUNK):
+            db.add_all([Sale(upload_batches_id=batch_id, **r) for r in accepted[i:i + _INSERT_CHUNK]])
+            db.flush()
 
     batch.rows_accepted = len(accepted)
     batch.rows_rejected = len(errors)
@@ -106,7 +110,9 @@ async def upload_inventory(
 
     if accepted:
         _ensure_products_exist(db, [r["product_id"] for r in accepted])
-        db.add_all([InventorySnapshot(upload_batches_id=batch_id, **r) for r in accepted])
+        for i in range(0, len(accepted), _INSERT_CHUNK):
+            db.add_all([InventorySnapshot(upload_batches_id=batch_id, **r) for r in accepted[i:i + _INSERT_CHUNK]])
+            db.flush()
 
     batch.rows_accepted = len(accepted)
     batch.rows_rejected = len(errors)

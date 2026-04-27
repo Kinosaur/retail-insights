@@ -71,3 +71,17 @@ class ReorderResponse(BaseModel):
     lead_time_days: int
     safety_stock_days: int
     items: list[ReorderItem]
+
+
+class ForecastWeek(BaseModel):
+    week_start: date
+    predicted_units: int
+
+
+class ForecastResponse(BaseModel):
+    product_id: str
+    product_name: str
+    weeks_forecast: int
+    forecast: list[ForecastWeek]
+    method: str
+    disclaimer: str

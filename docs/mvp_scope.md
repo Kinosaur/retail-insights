@@ -21,7 +21,7 @@ A working REST API that:
 4. Forecasts short-term demand for any product
 5. Produces a plain-English AI summary a non-technical shop owner can read
 
-Delivered in 20 days. Demonstrated with synthetic Uniqlo Singapore 2023 data.
+Delivered in 20 days. Demonstrated with synthetic Uniqlo Singapore 2023–2025 data.
 
 ---
 
@@ -73,7 +73,7 @@ The following are explicitly not being built for MVP. They may be considered aft
 | Multi-currency support | Singapore dollars only |
 | Excel export / report download | Upload only; no download endpoints |
 | Webhooks or real-time events | Polling-based; no push notifications |
-| Multi-year historical data | 2023 dataset is sufficient to demonstrate all analytics |
+| Multi-year comparison views | Year-over-year comparison endpoints are not built for MVP |
 | Machine learning forecasting | SMA only; ML models require more infrastructure |
 | Product image storage | Text data only |
 | Batch upload progress tracking | Synchronous uploads only |
@@ -107,13 +107,14 @@ The following are explicitly not being built for MVP. They may be considered aft
 - `GET /analytics/dead-stock` — slow-moving inventory flagged
 - `GET /analytics/reorder` — stock-level alerts based on sales velocity
 
-### Days 10–12 — Forecast 🔨 Next
+### Days 10–12 — Forecast ✅
 - Weekly sales aggregation per product
-- Simple Moving Average calculation
+- Simple Moving Average calculation (8-week rolling window)
 - `GET /analytics/forecast` — projected demand for a given SKU and number of weeks
-- Input validation (product must exist, weeks must be reasonable)
+- Input validation (product must exist, weeks 1–12)
+- 3-year dataset regenerated (2023–2025) with correct Singapore festive calendar per year and YoY growth
 
-### Days 13–15 — AI Layer ⏳
+### Days 13–15 — AI Layer 🔨 Next
 - Anthropic SDK integration
 - Gather all analytics data, compute cache key (hash of metrics)
 - Check `analysis_runs` table for cached result
@@ -134,7 +135,7 @@ The following are explicitly not being built for MVP. They may be considered aft
 
 The MVP is considered complete when:
 
-- [ ] All 7 analytics endpoints return correct data from the live Neon database
+- [x] All 7 analytics endpoints return correct data from the live Neon database (6 of 7 done; `explain` is next)
 - [ ] The AI explanation endpoint produces a coherent, non-hallucinated summary
 - [ ] The upload pipeline correctly handles dirty data (rejects bad rows, accepts good ones, reports both)
 - [ ] All existing tests still pass after Day 20 changes
@@ -149,12 +150,13 @@ These are known constraints that are acceptable for the MVP and documented hones
 
 | Limitation | Impact |
 |------------|--------|
+| No transaction grouping | Sales rows are individual line items with no receipt/order ID — basket AOV and "frequently bought together" analysis are not possible without a schema change |
 | SMA forecast is a baseline only | Does not account for seasonality, trend, or promotions — results are indicative, not predictive |
 | Lead time and safety stock are defaults | Not sourced from real supplier data — shop owner should adjust via query params |
 | No authentication | Anyone with the URL can call any endpoint |
 | Synthetic dataset | Results reflect simulated patterns, not a real shop's actual performance |
 | Single-tenant | No concept of multiple shops or users |
-| 2023 data only | Year-over-year comparisons are not available |
+| No year-over-year comparison endpoint | Data spans 2023–2025 but there is no endpoint to compare performance across years |
 
 ---
 

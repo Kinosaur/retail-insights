@@ -69,7 +69,7 @@ def upload_file(endpoint: str, filepath: Path, label: str) -> dict:
         resp = httpx.post(
             f"{BASE_URL}/{endpoint}",
             files={"file": (filepath.name, f, "text/csv")},
-            timeout=120,
+            timeout=600,   # 218K rows needs up to 10 min on remote DB
         )
     resp.raise_for_status()
     return resp.json()

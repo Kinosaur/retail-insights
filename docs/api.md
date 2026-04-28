@@ -1,7 +1,7 @@
 # API Contract — Retail Insights Engine
 
 > This document must be agreed upon by Person A and Person B before writing any endpoint code.
-> Last updated: Day 4 (sku → product rename)
+> Last updated: Day 15 — all 7 analytics endpoints implemented and live
 
 ---
 

@@ -1,139 +1,135 @@
 # Retail Insights Engine
 
-> A backend that turns messy retail spreadsheets into actionable insights for small clothing shops.
+> A backend API that turns messy retail spreadsheets into actionable business insights — with an AI layer that explains what to do next.
 
 ---
 
-## The Problem
+## What It Does
 
-Small clothing shops typically manage inventory and sales in spreadsheets. They have no easy way to know which products drive most of their revenue, which items are sitting dead on shelves, or when to reorder stock before running out. This project automates those answers.
+Small clothing shops track sales and inventory in spreadsheets but have no easy way to act on that data. This project automates the most common retail intelligence questions:
 
----
+- Which products drive most of the revenue?
+- What is sitting dead on shelves?
+- What needs to be reordered before it runs out?
+- What should the shop owner actually do this week?
 
-## Status
-
-**Day 5 of 20 — Ingestion pipeline complete, analytics in progress.**
-
-| Days | What | Status |
-|------|------|--------|
-| 1–2 | Setup, schema, API contract | ✅ Done |
-| 3–5 | Upload pipeline, validation, GET endpoints, tests | ✅ Done |
-| 6–9 | Core analytics endpoints | 🔨 Next |
-| 10–12 | Reorder + forecast | ⏳ Upcoming |
-| 13–15 | AI explanation layer | ⏳ Upcoming |
-| 16–20 | Polish, README, demo | ⏳ Upcoming |
-
-**Current data loaded (Singapore Uniqlo 2023):**
-- 801 products
-- 50,220 accepted sales rows
-- 9,118 inventory snapshots across 12 months
+Upload your CSVs, hit the API, get answers. The last endpoint (`/analytics/explain`) calls an LLM and returns a plain-English summary any non-technical person can read.
 
 ---
 
 ## Quickstart
 
-**Prerequisites:**
-- **Python 3.13.0** — download from [python.org](https://python.org)
-- **PostgreSQL** — installed locally (for running tests only, not the app)
-- The main database runs on [Neon](https://neon.tech) (cloud PostgreSQL, Singapore region) — no local DB setup needed for the app
+**You will need:**
+- Python 3.13 — [python.org](https://python.org)
+- A PostgreSQL database — free Neon cloud account at [neon.tech](https://neon.tech) (recommended, no local install needed), or a local PostgreSQL instance
+- A free Groq API key — [console.groq.com](https://console.groq.com) (for the AI explanation endpoint)
 
-### Mac / Linux
+### 1 — Clone and install
 
+**Mac / Linux**
 ```bash
 git clone https://github.com/Kinosaur/retail-insights.git
 cd retail-insights
-cp .env.example .env
 python -m venv .venv
 source .venv/bin/activate
-pip install --upgrade pip
 pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8000
 ```
 
-### Windows
-
+**Windows**
 ```bat
 git clone https://github.com/Kinosaur/retail-insights.git
 cd retail-insights
-copy .env.example .env
 python -m venv .venv
 .venv\Scripts\activate
-pip install --upgrade pip
 pip install -r requirements.txt
-.venv\Scripts\uvicorn app.main:app --reload --port 8000
 ```
 
-Open `.env` and paste the Neon password from Person A before starting the server.
+### 2 — Configure environment
 
-API docs: `http://localhost:8000/docs`
+```bash
+cp .env.example .env      # Mac / Linux
+copy .env.example .env    # Windows
+```
 
----
-
-## Teammate Setup (Friend B)
-
-Database lives on Neon — data is already there. Follow the Quickstart above for your OS (Mac or Windows). Once the server is running you are ready to go.
-
-You own the analytics endpoints — everything in `app/routers/analytics.py`, `app/services/analytics.py`, and related schemas.
-
-**You will never need to:**
-- Edit the database schema or write migrations (Person A owns this)
-- Edit any CSV files or run the generator
-- Seed the database (already loaded on Neon)
-- Run `alembic upgrade head` (Person A applies migrations to Neon)
-
-**Staying in sync with Person A:**
-
-| Person A does | You do |
-|---------------|--------|
-| Pushes code changes | `git pull` → restart server |
-| Pushes a schema change | `git pull` → restart server (migration already on Neon) |
-| Uploads new data to Neon | `git pull` → restart server (data already in Neon) |
-
-Everything syncs through Neon automatically — no local DB management needed.
-
----
-
-## Architecture
+Open `.env` and fill in two values:
 
 ```
-retail-insights/
-├── app/
-│   ├── models/        # SQLAlchemy ORM models (5 tables)
-│   ├── schemas/       # Pydantic v2 request/response schemas
-│   ├── routers/       # FastAPI route handlers
-│   ├── services/      # Business logic
-│   ├── parsers/       # CSV / Excel file parsers
-│   ├── validators/    # Row-level data cleaning pipeline
-│   ├── db.py          # Database session + connection
-│   └── main.py        # FastAPI app entry point
-├── alembic/           # Database migrations
-├── generator/         # Synthetic dataset generator
-├── scripts/           # seed.py — loads data via API
-├── docs/              # Schema, API contract, blueprint
-├── tests/             # pytest test suite (34 tests)
-└── data/raw/          # Source CSVs (do not edit directly)
+DATABASE_URL=postgresql+psycopg://your_user:your_password@your_host/your_db
+GROQ_API_KEY=gsk_your_key_here
 ```
+
+If using Neon: copy the **pooler connection string** from your Neon dashboard and paste it as `DATABASE_URL`. Make sure it starts with `postgresql+psycopg://`.
+
+### 3 — Create the database tables
+
+```bash
+alembic upgrade head
+```
+
+### 4 — Start the server
+
+**Mac / Linux**
+```bash
+uvicorn app.main:app --reload
+```
+
+**Windows**
+```bat
+python -m uvicorn app.main:app --reload
+```
+
+Server runs at `http://localhost:8000`. Interactive docs at `http://localhost:8000/docs`.
+
+### 5 — Load the sample data
+
+In a second terminal (with the server still running):
+
+**Mac / Linux**
+```bash
+source .venv/bin/activate
+python scripts/seed.py
+```
+
+**Windows**
+```bat
+.venv\Scripts\activate
+python scripts/seed.py
+```
+
+This uploads 801 products, ~155,000 sales rows, and 27,000 inventory snapshots. On a Neon free-tier database this takes around 5–10 minutes — let it run.
+
+### 6 — Try it
+
+Open `http://localhost:8000/docs` and try these endpoints:
+
+| Endpoint | What to expect |
+|----------|----------------|
+| `GET /analytics/overview` | 2025 revenue summary |
+| `GET /analytics/top-products` | Top 10 products by revenue |
+| `GET /analytics/dead-stock` | Items with no sales in 90+ days |
+| `GET /analytics/reorder` | Products running low on stock |
+| `GET /analytics/explain` | Plain-English AI summary of everything above |
 
 ---
 
 ## API Overview
 
-| Method | Endpoint | Owner | Description |
-|--------|----------|-------|-------------|
-| POST | `/upload/products` | Person A | Upload product catalog CSV |
-| POST | `/upload/sales` | Person A | Upload sales CSV |
-| POST | `/upload/inventory` | Person A | Upload inventory CSV |
-| GET | `/products` | Person A | Paginated product list with category filter |
-| GET | `/products/{product_id}` | Person A | Single product + full sales history |
-| GET | `/upload-batches` | Person A | All past uploads with status |
-| GET | `/analytics/overview` | Person B | Revenue totals, AOV, units sold |
-| GET | `/analytics/top-products` | Person B | Top sellers by revenue / units / margin |
-| GET | `/analytics/abc` | Person B | ABC product classification |
-| GET | `/analytics/dead-stock` | Person B | Items with no sales in N days |
-| GET | `/analytics/reorder` | Person B | Items below reorder point |
-| GET | `/analytics/forecast` | Person B | Moving-average forecast for one SKU |
-| GET | `/analytics/explain` | Person B | LLM plain-language summary |
-| GET | `/health` | — | Health check |
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/upload/products` | Upload product catalog CSV |
+| `POST` | `/upload/sales` | Upload sales CSV — validated row by row |
+| `POST` | `/upload/inventory` | Upload inventory CSV |
+| `GET` | `/products` | Paginated product list with category filter |
+| `GET` | `/products/{product_id}` | Single product with full sales history |
+| `GET` | `/upload-batches` | All past uploads with status and row counts |
+| `GET` | `/analytics/overview` | Total revenue, units sold, AOV for any date range |
+| `GET` | `/analytics/top-products` | Top sellers ranked by revenue, units, or margin |
+| `GET` | `/analytics/abc` | ABC classification — A (top 80% revenue), B, C |
+| `GET` | `/analytics/dead-stock` | Products with inventory but no sales in N days |
+| `GET` | `/analytics/reorder` | Products below reorder point based on sales velocity |
+| `GET` | `/analytics/forecast` | 8-week moving average demand forecast for one SKU |
+| `GET` | `/analytics/explain` | LLM plain-English summary with action recommendation |
+| `GET` | `/health` | Health check |
 
 Full contract: [`docs/api.md`](./docs/api.md)
 
@@ -141,7 +137,7 @@ Full contract: [`docs/api.md`](./docs/api.md)
 
 ## Data Pipeline
 
-Every upload runs through a validation pipeline before touching the database:
+Every upload is validated row by row before anything is saved. The API returns a report of exactly which rows were accepted, rejected, and why.
 
 | Issue | Rule |
 |-------|------|
@@ -153,20 +149,46 @@ Every upload runs through a validation pipeline before touching the database:
 | Duplicate row | Deduplicate silently |
 | Wrong date format | Try common formats, then reject |
 | Currency symbols (`$`, `S$`, `฿`) | Strip and parse |
-| Unknown SKU in sales | Auto-create product as UNKNOWN |
+| Unknown product ID in sales | Auto-create product as UNKNOWN |
 | Whitespace in product ID | Trim |
 | Lowercase product ID | Normalise to uppercase |
-
-Every upload returns a full validation report with row-level error details.
 
 ---
 
 ## Dataset
 
-Synthetic 2023 data modelled on Singapore Uniqlo (801 real SKUs). Sales are generated with realistic seasonality: Chinese New Year spike, Hari Raya, National Day, Deepavali, 11.11 campaign, AIRism year-round, year-end sale. ~5% of rows contain intentional dirty data to exercise the validation pipeline.
+The sample data (`data/raw/`) is synthetic 2023–2025 data modelled on Singapore Uniqlo — 801 real product SKUs with realistic seasonality: Chinese New Year (date shifts each year), Hari Raya, National Day (Aug 9), Deepavali, 11.11 campaign, AIRism year-round, year-end sale. Year-over-year growth is baked in (+5% in 2024, +8% in 2025). About 5% of rows contain intentional dirty data to demonstrate the validation pipeline.
 
-Raw files are in `data/raw/`. See `data/raw/README.md` — **do not edit directly**.  
-To regenerate: `python generator/generate_dataset.py`
+| Table | Rows | Description |
+|-------|------|-------------|
+| `products` | 801 | Product names, categories, cost and sell prices |
+| `sales` | 155,090 | Accepted transactions across 3 years |
+| `inventory_snapshots` | 27,403 | Monthly stock-on-hand across 36 months |
+
+To regenerate the raw CSVs: `python generator/generate_dataset.py`
+
+---
+
+## Architecture
+
+```
+retail-insights/
+├── app/
+│   ├── models/        # SQLAlchemy ORM models (5 tables)
+│   ├── schemas/       # Pydantic v2 request/response schemas
+│   ├── routers/       # FastAPI route handlers
+│   ├── services/      # Business logic and query layer
+│   ├── parsers/       # CSV / Excel file parsers
+│   ├── validators/    # Row-level data cleaning pipeline
+│   ├── db.py          # Database session and connection
+│   └── main.py        # FastAPI app entry point
+├── alembic/           # Database migrations
+├── generator/         # Synthetic dataset generator
+├── scripts/           # seed.py — loads sample data via the API
+├── docs/              # API contract, project overview, MVP scope
+├── tests/             # pytest test suite (34 tests)
+└── data/raw/          # Source CSVs — do not edit directly
+```
 
 ---
 
@@ -174,64 +196,63 @@ To regenerate: `python generator/generate_dataset.py`
 
 | Layer | Choice |
 |-------|--------|
-| Language | Python 3.13.0 |
+| Language | Python 3.13 |
 | Framework | FastAPI |
 | Validation | Pydantic v2 |
-| Data processing | Pandas |
-| Database | PostgreSQL |
 | ORM | SQLAlchemy 2.0 |
 | Migrations | Alembic |
-| LLM | Anthropic Claude API |
+| Database | PostgreSQL |
+| Data processing | Pandas |
+| LLM | Groq API — llama-3.3-70b-versatile (free tier) |
 | Testing | pytest |
-| Linting | ruff |
 
 ---
 
 ## Running Tests
 
+Requires a local PostgreSQL instance. Tests run against a separate database and never touch your main database.
+
+**1. Create the test database** (one time only):
 ```bash
-make test
+createdb retail_insights_test
 ```
 
-34 tests covering all upload endpoints and GET endpoints — happy paths, bad file types, missing columns, invalid dates, NaN prices, duplicates, pagination, 404s, and edge cases.
+**2. Add `TEST_DATABASE_URL` to your `.env`:**
+```
+TEST_DATABASE_URL=postgresql+psycopg://postgres:yourpassword@localhost:5432/retail_insights_test
+```
 
-Tests run against a separate `retail_insights_test` database and are fully isolated (each test gets a clean slate).
+**3. Run:**
+```bash
+pytest
+```
+
+The test suite creates and drops all tables automatically. 34 tests covering upload endpoints, GET endpoints, validation edge cases, pagination, 404s, and duplicate handling.
 
 ---
 
-## Makefile Reference
+## Limitations
 
-```bash
-make install    # create venv + install dependencies
-make db-create  # prints DB creation commands
-make migrate    # run Alembic migrations
-make run        # start API server on :8000
-make seed       # upload all CSVs into database
-make reseed     # instructions to wipe + reload data
-make test       # run all 34 tests
-make lint       # ruff linter + format check
-```
-
----
-
-## Limitations & Honest Caveats
-
-*(Full section to be written on Day 18)*
-
-- SMA forecast is a baseline only — not production forecasting
-- Lead time and safety stock are configurable defaults, not real supplier data
-- No authentication or multi-tenancy
-- Synthetic dataset — results reflect simulated patterns, not a real shop
+- **SMA forecast is a baseline** — the 8-week moving average does not account for seasonality, trends, or promotions. Treat it as directional, not predictive.
+- **Lead time and safety stock are defaults** — 14-day lead time and 7-day safety stock are reasonable starting points but should be adjusted to real supplier agreements via query params.
+- **No transaction grouping** — each sales row is one line item. True basket-level AOV and "frequently bought together" analysis require adding a receipt/order ID to the schema.
+- **No authentication** — any request to the server is accepted. Not suitable for production without adding auth.
+- **Synthetic dataset** — results reflect simulated patterns, not a real shop's performance.
 
 ---
 
 ## What We'd Build Next
 
-*(To be filled after MVP)*
+- **Frontend dashboard** — a UI so shop owners don't need to use Swagger
+- **Better forecasting** — replace SMA with a model that handles seasonality (Prophet or exponential smoothing)
+- **Transaction grouping** — add a receipt/order ID for basket analysis and true AOV
+- **Authentication** — API keys or JWT for multi-tenant use
+- **Year-over-year comparison** — `GET /analytics/overview?compare=true` for same-period last year
+- **Reorder webhook** — push a notification when a product crosses its reorder point
 
 ---
 
 ## Team
 
 - **Person A** — Data & Ingestion: database schema, migrations, file parsers, validation pipeline, upload endpoints, tests
-- **Person B** — Analytics & AI: analytics functions, LLM integration, forecasting, caching
+- **Person B** — Analytics & AI: analytics service layer, forecasting, AI explanation, caching

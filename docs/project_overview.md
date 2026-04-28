@@ -4,7 +4,7 @@
 
 The Retail Insights Engine is a backend API that helps small clothing shops understand their business through data. A shop owner uploads their sales and inventory spreadsheets, and the system answers the questions they would otherwise have to do manually in Excel: What is selling? What is sitting dead on shelves? What needs to be reordered before it runs out?
 
-The project also includes an AI layer (powered by Claude) that turns raw numbers into plain-English summaries a shop owner can actually act on.
+The project also includes an AI layer (powered by Groq's Llama model, free tier) that turns raw numbers into plain-English summaries a shop owner can actually act on.
 
 ---
 
@@ -39,7 +39,7 @@ Data stored in PostgreSQL (hosted on Neon cloud, Singapore region)
          ↓
 Analytics API answers business questions
          ↓
-AI layer (Claude) produces plain-English summaries
+AI layer (Groq/Llama) produces plain-English summaries
 ```
 
 Every upload goes through a strict validation pipeline before any data is saved. The system tells the user exactly which rows were rejected and why — missing product ID, invalid date, zero quantity, and so on. This means dirty real-world data is handled gracefully rather than silently corrupted.
@@ -93,7 +93,7 @@ Both engineers connect to the same shared Neon cloud database. Person A manages 
 | Migrations | Alembic | Tracks every schema change with rollback support |
 | Database | PostgreSQL (Neon) | Reliable, cloud-hosted, free tier, Singapore region |
 | Data processing | Pandas | CSV/Excel parsing and row-level validation |
-| AI | Anthropic Claude API | Plain-English summaries of analytics output |
+| AI | Groq API (llama-3.3-70b-versatile) | Plain-English summaries, free tier, result cached to avoid repeat calls |
 | Testing | pytest | 34 tests covering all upload and GET endpoints |
 
 ---
@@ -134,7 +134,7 @@ All timestamps are stored in UTC with timezone awareness (`TIMESTAMPTZ`). Sales 
 
 ## Project Status
 
-Day 12 of 20. Ingestion pipeline, all analytics endpoints, and forecasting are complete. AI explanation layer is next.
+Day 20 of 20 — Complete. All 7 analytics endpoints live, AI explanation layer active, documentation finalised.
 
 | Phase | Days | Status |
 |-------|------|--------|
@@ -142,5 +142,5 @@ Day 12 of 20. Ingestion pipeline, all analytics endpoints, and forecasting are c
 | Upload pipeline, validation, GET endpoints, tests | 3–5 | ✅ Done |
 | Core analytics endpoints | 6–9 | ✅ Done |
 | Reorder + forecast | 10–12 | ✅ Done |
-| AI explanation layer | 13–15 | 🔨 Next |
-| Polish, README, demo | 16–20 | ⏳ Upcoming |
+| AI explanation layer | 13–15 | ✅ Done |
+| Polish, README, demo | 16–20 | ✅ Done |

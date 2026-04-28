@@ -10,7 +10,12 @@ from app.models.inventory import InventorySnapshot
 from app.models.product import Product
 from app.models.sale import Sale
 from app.models.upload_batch import UploadBatch
-from app.parsers.csv_parser import INVENTORY_REQUIRED, PRODUCTS_REQUIRED, SALES_REQUIRED, parse_upload
+from app.parsers.csv_parser import (
+    INVENTORY_REQUIRED,
+    PRODUCTS_REQUIRED,
+    SALES_REQUIRED,
+    parse_upload,
+)
 from app.schemas.upload import UploadError, UploadResponse
 from app.validators.inventory import validate_inventory
 from app.validators.products import validate_products
@@ -27,7 +32,7 @@ def _status(accepted: int, rejected: int) -> str:
     return "partial"
 
 
-_INSERT_CHUNK = 5_000   # max rows per flush to stay within psycopg3 param limits
+_INSERT_CHUNK = 5_000  # max rows per flush to stay within psycopg3 param limits
 
 
 def _ensure_products_exist(db: Session, product_ids: list[str]) -> None:
@@ -69,7 +74,12 @@ async def upload_sales(
     if accepted:
         _ensure_products_exist(db, [r["product_id"] for r in accepted])
         for i in range(0, len(accepted), _INSERT_CHUNK):
-            db.add_all([Sale(upload_batches_id=batch_id, **r) for r in accepted[i:i + _INSERT_CHUNK]])
+            db.add_all(
+                [
+                    Sale(upload_batches_id=batch_id, **r)
+                    for r in accepted[i : i + _INSERT_CHUNK]
+                ]
+            )
             db.flush()
 
     batch.rows_accepted = len(accepted)
@@ -111,7 +121,12 @@ async def upload_inventory(
     if accepted:
         _ensure_products_exist(db, [r["product_id"] for r in accepted])
         for i in range(0, len(accepted), _INSERT_CHUNK):
-            db.add_all([InventorySnapshot(upload_batches_id=batch_id, **r) for r in accepted[i:i + _INSERT_CHUNK]])
+            db.add_all(
+                [
+                    InventorySnapshot(upload_batches_id=batch_id, **r)
+                    for r in accepted[i : i + _INSERT_CHUNK]
+                ]
+            )
             db.flush()
 
     batch.rows_accepted = len(accepted)
@@ -163,7 +178,7 @@ async def upload_products(
                 "category": stmt.excluded.category,
                 "cost_price": stmt.excluded.cost_price,
                 "sell_price": stmt.excluded.sell_price,
-                "updated_at": func.now(),   # onupdate= doesn't fire on pg_insert upserts
+                "updated_at": func.now(),  # onupdate= doesn't fire on pg_insert upserts
             },
         )
         db.execute(stmt)

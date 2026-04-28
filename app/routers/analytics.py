@@ -7,6 +7,7 @@ from app.db import get_db
 from app.schemas.analytics import (
     ABCResponse,
     DeadStockResponse,
+    ExplainResponse,
     ForecastResponse,
     OverviewResponse,
     ReorderResponse,
@@ -20,6 +21,7 @@ from app.services.analytics import (
     get_reorder,
     get_top_products,
 )
+from app.services.explain import get_explain
 
 router = APIRouter(prefix="/analytics", tags=["analytics"])
 
@@ -79,3 +81,11 @@ def forecast(
             detail={"code": "PRODUCT_NOT_FOUND", "message": f"No product with id '{product_id}'"},
         )
     return result
+
+
+@router.get("/explain", response_model=ExplainResponse)
+def explain(db: Session = Depends(get_db)) -> ExplainResponse:
+    try:
+        return get_explain(db)
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"AI explanation unavailable: {e}")

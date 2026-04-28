@@ -85,3 +85,10 @@ class ForecastResponse(BaseModel):
     forecast: list[ForecastWeek]
     method: str
     disclaimer: str
+
+
+class ExplainResponse(BaseModel):
+    what_is_working: str
+    needs_attention: str
+    action_this_week: str
+    cached: bool
